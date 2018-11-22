@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zwxq.dao.ConfessionMapper" >
+
+    <resultMap id="BaseResultMap" type="com.zwxq.bean.Confession" >
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="LONGVARCHAR" />
+        <result column="time" property="time" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="stateniming" property="stateniming" jdbcType="INTEGER" />
+        <result column="image" property="image" jdbcType="LONGVARCHAR" />
+        <result column="touser" property="touser" jdbcType="VARCHAR" />
+        <result column="openid" property="openid" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, content, time, image, openid,state,touser,stateniming
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from confession
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 查询所有 -->
+    <select id="findAllConfession" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from confession ORDER BY time DESC limit #{pageStart},#{pageSize}
+    </select>
+    
+    <!-- 查询总数 -->
+    <select id="countItem" resultType="java.lang.Integer"  >
+        select count(1) from confession
+    </select>
+    
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+        delete from confession
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.zwxq.bean.Confession" >
+	    <selectKey  keyProperty="id" resultType="java.lang.String" order="BEFORE">
+	             select uuid()
+	 	</selectKey>
+        insert into confession (id, content,image, openid,touser,stateniming
+            )
+        values (#{id,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}, 
+             #{image,jdbcType=LONGVARCHAR}, #{openid,jdbcType=VARCHAR},#{touser,jdbcType=VARCHAR},#{stateniming,jdbcType=INTEGER}
+            )
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.zwxq.bean.Confession" >
+        update confession
+        <set >
+            <if test="content != null" >
+                content = #{content,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="time != null" >
+                time = #{time,jdbcType=TIMESTAMP},
+            </if>
+           
+            <if test="image != null" >
+                image = #{image,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="openid != null" >
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.zwxq.bean.Confession" >
+        update confession
+        set content = #{content,jdbcType=LONGVARCHAR},
+            time = #{time,jdbcType=TIMESTAMP},
+          
+            image = #{image,jdbcType=LONGVARCHAR},
+            openid = #{openid,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+</mapper>
