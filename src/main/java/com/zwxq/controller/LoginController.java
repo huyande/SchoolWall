@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.zwxq.bean.Wxuserinfo;
 import com.zwxq.service.WxUserInfoService;
 import com.zwxq.utils.HttpClientUtil;
+
+/**
+ * 用户注册 、保存用户
+ * @author Administrator
+ *
+ */
 @RestController
 public class LoginController {
 	Logger log = LoggerFactory.getLogger(LoginController.class);

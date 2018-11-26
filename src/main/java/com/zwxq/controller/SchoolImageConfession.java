@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zwxq.bean.Confession;
 import com.zwxq.bean.Liked;
 import com.zwxq.bean.Notification;
+import com.zwxq.bean.SchoolImage;
 import com.zwxq.bean.Wxuserinfo;
 import com.zwxq.bean.ana.ScConfessionJson;
 import com.zwxq.bean.ana.User;
@@ -25,23 +26,24 @@ import com.zwxq.bean.param.ConfParam;
 import com.zwxq.service.LikedService;
 import com.zwxq.service.NotificationService;
 import com.zwxq.service.SchoolConfessionService;
+import com.zwxq.service.SchoolImageService;
 import com.zwxq.service.WxUserInfoService;
 import com.zwxq.utils.DataTimeUtils;
 import com.zwxq.utils.JacksonUtil;
 import com.zwxq.utils.MyHttpUtils;
 
 /**
- * 校园表白墙
+ * 校园照片墙 
  * @author Administrator
  *
  */
 @RestController()
-@RequestMapping("/conf")
-public class SchoolConfession {
-	Logger log = LoggerFactory.getLogger(SchoolConfession.class);
+@RequestMapping("/scImage")
+public class SchoolImageConfession {
+	Logger log = LoggerFactory.getLogger(SchoolImageConfession.class);
 	
 	@Autowired
-	private SchoolConfessionService schoolConfessionService;
+	private SchoolImageService schoolImageService;
 	
 	@Autowired
 	private WxUserInfoService wxUserInfoService;
@@ -56,39 +58,27 @@ public class SchoolConfession {
 	@Value("${qiniu.imageAddress}")
 	private String imageAddress;
 	
-	//图片地址前缀 
-	@Value("${serverImage.address}")
-	private String serverimageAddress;
-	
 	/**
 	 * 分页获取数据  
-	 * 分页参数暂未传到后台
+	 * 
 	 * openid 是当前用户
 	 * @return
 	 */
-	@GetMapping("/confessionDataSet")
+	@GetMapping("/imageDataSet")
 	public String confDataSet(Integer page,Integer pageSize,String openid){
 		//List<String>images = new ArrayList<>();
-		//集合
+		//封装的返回数据的集合
 		List<ScConfessionJson> jsons = new ArrayList<>();
-		List<Confession> confList = new ArrayList<>();
+		//存放图片信息 
+		List<SchoolImage> confList = new ArrayList<>();
 		//查询数据  分页查询    
-		confList=schoolConfessionService.findConfession(page,pageSize);
-		for (Confession conf : confList) {
+		confList=schoolImageService.findschoolImage(page,pageSize);
+		for (SchoolImage conf : confList) {
 			User user = new User();
 			ScConfessionJson scConfessionJson = new ScConfessionJson();
 			Wxuserinfo wxuserinfo = wxUserInfoService.findByOpenId(conf.getOpenid());
-			if(conf.getStateniming()==1){//需要匿名
-				if(wxuserinfo.getGender()==1){ //男
-					user.setAvatar(serverimageAddress+"image/boy.png");
-				}else{ //女
-					user.setAvatar(serverimageAddress+"image/girl.png");
-				}
-				user.setUsername("TO:"+conf.getTouser()); //暂时 界面显示to 某某
-			}else{
-				user.setAvatar(wxuserinfo.getAvatarurl());
-				user.setUsername("TO:"+conf.getTouser()); //wxuserinfo.getNickname()
-			}
+			user.setAvatar(wxuserinfo.getAvatarurl());
+			user.setUsername(wxuserinfo.getNickname()); //
 			user.setUserId(wxuserinfo.getOpenid());
 			scConfessionJson.setId(conf.getId());
 			scConfessionJson.setContent(conf.getContent());
@@ -101,7 +91,10 @@ public class SchoolConfession {
 			scConfessionJson.setUser(user);
 			List<String>images = new ArrayList<>();
 			if(conf.getImage()!=null){
-				images.add(imageAddress+conf.getImage());
+				String[] split = conf.getImage().split(";");
+				for (String string : split) {
+					images.add(imageAddress+string.replace(";", ""));
+				}
 			}
 			scConfessionJson.setImages(images);
 			jsons.add(scConfessionJson);
@@ -117,24 +110,26 @@ public class SchoolConfession {
 	 */
 	@PostMapping("/post")
 	public String postAdd(HttpServletRequest req){
+		//获取用户提交的
 		String fromStream = MyHttpUtils.getStringFromStream(req);
 		ConfParam confParam = JacksonUtil.readValue(fromStream, ConfParam.class);
-		Confession confession = new Confession();
+		SchoolImage schoolImage = new SchoolImage();
 		//设置内容
-		confession.setContent(confParam.getContent());
+		schoolImage.setContent(confParam.getContent());
 		//拿到用户的上传的图片
 		if(confParam.getAttachments()!=null && confParam.getAttachments().size()>0){
-			confession.setImage(confParam.getAttachments().get(0));
+			StringBuffer sb = new StringBuffer();
+			for (String strimg : confParam.getAttachments()) {
+				sb.append(strimg).append(";");
+			}
+			schoolImage.setImage(sb.toString());
 		}
 		//拿到用户的 openid
-		confession.setOpenid(confParam.getOpenid());
+		schoolImage.setOpenid(confParam.getOpenid());
 		//设置这条是否匿名
-		confession.setStateniming((confParam.getStateNiming()==true)?1:0);
-		//设置touser 
-		confession.setTouser(confParam.getUsername());
 		log.info(confParam.toString());
 		//添加数据  
-		int num=schoolConfessionService.postAdd(confession);
+		int num=schoolImageService.postAdd(schoolImage);
 		if(num>0){
 			return "{\"error_code\":0,\"error_message\":\"添加成功\"}";
 		}else{
@@ -144,7 +139,6 @@ public class SchoolConfession {
 	
 	/**
 	 * 点赞处理
-	 * openid 是当前用户的id
 	 * @param req
 	 * @return
 	 */
@@ -172,12 +166,12 @@ public class SchoolConfession {
 			//保存添加点赞用户id
 			notification.setFromopenid(openid);
 			//根据信息id查询此信息
-			Confession confession =schoolConfessionService.findConfessionByConfid(confid);
+			SchoolImage schoolImage =schoolImageService.findSchoolByImageid(confid);
 			//保存当前信息 添加者的id 
-			notification.setToopenid(confession.getOpenid());
+			notification.setToopenid(schoolImage.getOpenid());
 			//设置消息类型 是表白
-			notification.setType(1);
-			if(!openid.equals(confession.getOpenid())){ //自己点赞不记录
+			notification.setType(0);
+			if(! openid.equals(schoolImage.getOpenid())){ //自己点赞 不记录
 				int num =notificationService.addNotificationMessage(notification);
 			}
 			return "{\"likedstate\":true,\"likecount\":1}";

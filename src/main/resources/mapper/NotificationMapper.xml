@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zwxq.dao.NotificationMapper" >
+
+    <resultMap id="BaseResultMap" type="com.zwxq.bean.Notification" >
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="fromopenid" property="fromopenid" jdbcType="VARCHAR" />
+        <result column="confid" property="confid" jdbcType="VARCHAR" />
+        <result column="toopenid" property="toopenid" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="createtime" property="createtime" jdbcType="VARCHAR" />
+    </resultMap>
+    
+     <sql id="Base_Column_List" >
+        id, fromopenid, confid, toopenid, type,createtime
+     </sql>
+    
+     <!-- 查询我的所有 -->
+    <select id="findnotificationDataList" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from notification where toopenid=#{toopenid,jdbcType=VARCHAR} ORDER BY createtime DESC limit #{pageStart},#{pageSize}
+    </select>
+    
+	<!--添加  -->
+    <insert id="insert" parameterType="com.zwxq.bean.Notification" >
+	    <selectKey  keyProperty="id" resultType="java.lang.String" order="BEFORE">
+		             select uuid()
+		 </selectKey>
+        insert into notification (id, fromopenid, confid,toopenid, type)
+        values (#{id,jdbcType=VARCHAR}, #{fromopenid,jdbcType=VARCHAR}, #{confid,jdbcType=VARCHAR}, 
+            #{toopenid,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER})
+            
+    </insert>
+</mapper>

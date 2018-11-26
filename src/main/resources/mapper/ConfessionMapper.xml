@@ -31,6 +31,14 @@
         from confession ORDER BY time DESC limit #{pageStart},#{pageSize}
     </select>
     
+    
+     <!-- 查询我的所有 -->
+    <select id="findschoolConfessionOfMyLove" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from confession where openid=#{openid,jdbcType=VARCHAR} ORDER BY time DESC limit #{pageStart},#{pageSize}
+    </select>
+    
     <!-- 查询总数 -->
     <select id="countItem" resultType="java.lang.Integer"  >
         select count(1) from confession

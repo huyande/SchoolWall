@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zwxq.dao.SchoolImageMapper" >
+
+    <resultMap id="BaseResultMap" type="com.zwxq.bean.SchoolImage" >
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="LONGVARCHAR" />
+        <result column="time" property="time" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="image" property="image" jdbcType="LONGVARCHAR" />
+        <result column="openid" property="openid" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, content, time, image, openid,state
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from schoolimage
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 查询所有 -->
+    <select id="findAllschoolImage" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from schoolimage ORDER BY time DESC limit #{pageStart},#{pageSize}
+    </select>
+    
+    <!-- 查询所有 -->
+    <select id="findSchoolImageOfMyImage" resultMap="BaseResultMap"  >
+        select 
+        <include refid="Base_Column_List" />
+        from schoolimage where openid=#{openid,jdbcType=VARCHAR} ORDER BY time DESC limit #{pageStart},#{pageSize} 
+    </select>
+    
+    
+    <!-- 查询总数 -->
+    <select id="countItem" resultType="java.lang.Integer"  >
+        select count(1) from schoolimage
+    </select>
+    
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+        delete from schoolimage
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.zwxq.bean.SchoolImage" >
+	    <selectKey  keyProperty="id" resultType="java.lang.String" order="BEFORE">
+	             select uuid()
+	 	</selectKey>
+        insert into schoolimage (id, content,image, openid
+            )
+        values (#{id,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}, 
+             #{image,jdbcType=LONGVARCHAR}, #{openid,jdbcType=VARCHAR}
+            )
+    </insert>
+
+
+    <update id="updateByPrimaryKey" parameterType="com.zwxq.bean.SchoolImage" >
+        update schoolimage
+        set content = #{content,jdbcType=LONGVARCHAR},
+            time = #{time,jdbcType=TIMESTAMP},
+          
+            image = #{image,jdbcType=LONGVARCHAR},
+            openid = #{openid,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+</mapper>

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.zwxq.bean.Confession;
+import com.zwxq.bean.SchoolImage;
 import com.zwxq.bean.ana.ScConfessionJson;
 
 public interface ConfessionMapper {
@@ -21,4 +22,6 @@ public interface ConfessionMapper {
     int updateByPrimaryKey(Confession record);
 
 	List<Confession> findAllConfession(@Param(value="pageStart") int pageStart,@Param(value="pageSize")int pageSize);
+
+	List<Confession> findschoolConfessionOfMyLove(@Param(value="pageStart") int pageStart,@Param(value="pageSize")int pageSize, @Param(value="openid")String openid);
 }

@@ -27,9 +27,9 @@ public class QiniuTest {
     }
 
     // 设置好账号的ACCESS_KEY和SECRET_KEY
-    String ACCESS_KEY = ""; // 这两个登录七牛
+    String ACCESS_KEY = "K8WWlWVTd6-p4WzoIh0IygahkTXgy2dztQVD1Tpk"; // 这两个登录七牛
             // 账号里面可以找到  进入 个人面板->个人中心->密钥管理可找到
-    String SECRET_KEY = "";//
+    String SECRET_KEY = "yUG0Z81iv0ZpdW3vXGtGwUOKJVOoJNNYin4lMqaQ";//
 
     // 要上传的空间
     String bucketname = "schoolwall"; // 填写新建的那个存储空间对象的名称
