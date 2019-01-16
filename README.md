@@ -30,6 +30,6 @@
 对于的微信小程序的开发，采用java开发的例子很少，此项目可以用来练习如何使用java开微信小程序。 
 
 5、体验此微信小程序 扫描下方二维码
-![Image text](https://img-blog.csdnimg.cn/20190111130922400.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2h1eWFuZGUxMjM=,size_16,color_FFFFFF,t_70)
+![Image text](https://img-blog.csdnimg.cn/20190111130910278.png)
 
 
