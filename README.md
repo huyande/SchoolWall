@@ -1,4 +1,7 @@
 # SchoolWall
+
+博客地址：https://blog.csdn.net/huyande123/article/details/86297278
+
 校园墙 微信小程序后台 Java
 1、微信小程序前台展示
 ![Image text](https://img-blog.csdnimg.cn/20190111125803848.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2h1eWFuZGUxMjM=,size_16,color_FFFFFF,t_70)
